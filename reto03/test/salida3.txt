@@ -1,0 +1,6 @@
+producto,unidades_vendidas,ingreso_total,precio_promedio
+Laptop,7,104000.00,14857.14
+Monitor,5,25400.00,5080.00
+Tablet,8,24300.00,3037.50
+Mouse,25,6250.00,250.00
+Teclado,8,6550.00,818.75
