@@ -1,53 +1,56 @@
 import sys
 import math
 
-def solucionar():
-    header = sys.stdin.readline()
-    if not header:
-        return
-
+def main():
     productos = {}
+    
+    linea_header = sys.stdin.readline()
+    if not linea_header:
+        return
 
     for linea in sys.stdin:
         linea = linea.strip()
         if not linea:
             continue
-            
+        
         partes = linea.split(',')
         if len(partes) != 4:
             continue
-
-        nombre = partes[1].strip()
-        if not nombre:
-            continue
-
+            
+        nombre_producto = partes[1].strip()
+        
         try:
             cantidad = int(partes[2])
-            precio = float(partes[3])
+            precio_unitario = float(partes[3])
             
-            if not math.isfinite(precio):
+            if cantidad < 0 or not math.isfinite(precio_unitario) or precio_unitario < 0:
                 continue
                 
-        except ValueError:
-            continue
+        except (ValueError, IndexError):
+            continue 
+           
+        if nombre_producto not in productos:
+            productos[nombre_producto] = [0, 0.0]
+    
+        stats = productos[nombre_producto]
+        stats[0] += cantidad
+        stats[1] += cantidad * precio_unitario
 
-        if nombre in productos:
-            datos = productos[nombre]
-            datos[0] += cantidad
-            datos[1] += cantidad * precio
-        else:
-            productos[nombre] = [cantidad, cantidad * precio]
-
-    resultado = []
-    for nombre, (unidades, ingreso) in productos.items():
+    reporte_final = []
+    for prod, datos in productos.items():
+        unidades = datos[0]
+        ingreso = datos[1]
         promedio = ingreso / unidades if unidades > 0 else 0.0
-        resultado.append((nombre, unidades, ingreso, promedio))
+        reporte_final.append((prod, unidades, ingreso, promedio))
+    
+    reporte_ordenado = sorted(
+        reporte_final, 
+        key=lambda x: (-x[2], x[0])
+    )
 
-    resultado.sort(key=lambda x: (-x[2], x[0]))
-
-    print("producto,unidades_vendidas,ingreso_total,precio_promedio")
-    for nombre, unidades, ingreso, promedio in resultado:
-        sys.stdout.write(f"{nombre},{unidades},{ingreso:.2f},{promedio:.2f}\n")
+    sys.stdout.write("producto,unidades_vendidas,ingreso_total,precio_promedio\n")
+    for prod, unidades, ingreso, promedio in reporte_ordenado:
+        sys.stdout.write(f"{prod},{unidades},{ingreso:.2f},{promedio:.2f}\n")
 
 if __name__ == "__main__":
-    solucionar()
+    main()
