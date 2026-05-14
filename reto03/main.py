@@ -1,56 +1,53 @@
 import sys
+import math
 
-lineas = sys.stdin.read().strip().split('\n')
+def solucionar():
+    header = sys.stdin.readline()
+    if not header:
+        return
 
-productos = {}
+    productos = {}
 
-for linea in lineas[1:]:
-    partes = linea.split(',')
+    for linea in sys.stdin:
+        linea = linea.strip()
+        if not linea:
+            continue
+            
+        partes = linea.split(',')
+        if len(partes) != 4:
+            continue
 
-    if len(partes) != 4:
-        continue
+        nombre = partes[1].strip()
+        if not nombre:
+            continue
 
-    fecha = partes[0]
-    producto = partes[1].strip()
+        try:
+            cantidad = int(partes[2])
+            precio = float(partes[3])
+            
+            if not math.isfinite(precio):
+                continue
+                
+        except ValueError:
+            continue
 
-    if producto == "":
-        continue
+        if nombre in productos:
+            datos = productos[nombre]
+            datos[0] += cantidad
+            datos[1] += cantidad * precio
+        else:
+            productos[nombre] = [cantidad, cantidad * precio]
 
-    try:
-        cantidad = int(partes[2])
-        precio = float(partes[3])
-    except:
-        continue
+    resultado = []
+    for nombre, (unidades, ingreso) in productos.items():
+        promedio = ingreso / unidades if unidades > 0 else 0.0
+        resultado.append((nombre, unidades, ingreso, promedio))
 
-    if producto not in productos:
-        productos[producto] = {
-            "unidades": 0,
-            "ingreso": 0.0
-        }
+    resultado.sort(key=lambda x: (-x[2], x[0]))
 
-    productos[producto]["unidades"] += cantidad
-    productos[producto]["ingreso"] += cantidad * precio
+    print("producto,unidades_vendidas,ingreso_total,precio_promedio")
+    for nombre, unidades, ingreso, promedio in resultado:
+        sys.stdout.write(f"{nombre},{unidades},{ingreso:.2f},{promedio:.2f}\n")
 
-for producto in productos:
-    unidades = productos[producto]["unidades"]
-    ingreso = productos[producto]["ingreso"]
-
-    if unidades > 0:
-        productos[producto]["promedio"] = ingreso / unidades
-    else:
-        productos[producto]["promedio"] = 0
-
-lista_ordenada = sorted(
-    productos.items(),
-    key=lambda x: x[1]["ingreso"],
-    reverse=True
-)
-
-print("producto,unidades_vendidas,ingreso_total,precio_promedio")
-
-for nombre, datos in lista_ordenada:
-    unidades = datos["unidades"]
-    ingreso = datos["ingreso"]
-    promedio = datos["promedio"]
-
-    print(f"{nombre},{unidades},{ingreso:.2f},{promedio:.2f}")
+if __name__ == "__main__":
+    solucionar()
