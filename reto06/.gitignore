@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+
+# Datos de prueba pesados
+*.csv
+*.log
+tests/datos_masivos.txt
+
+# Entornos virtuales
+venv/
+.venv/
